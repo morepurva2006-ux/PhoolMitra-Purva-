@@ -1,0 +1,85 @@
+const express = require("express");
+const bodyParser = require("body-parser");
+const bcrypt = require("bcrypt");
+const path = require("path");
+const mysql = require("mysql");
+const cors = require("cors");
+
+const app = express();
+const PORT = 5000;
+
+// --- MIDDLEWARE ---
+app.use(cors());
+app.use(bodyParser.json());
+// This line tells Express to serve your HTML/CSS/Images from the current folder
+app.use(express.static(__dirname));
+
+// --- 1. DATABASE CONNECTION ---
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "admin456", // Make sure this matches your MySQL password
+    database: "phoolmitra"
+});
+
+db.connect((err) => {
+    if (err) {
+        console.error("❌ DATABASE CONNECTION FAILED:", err.message);
+        console.log("Please ensure XAMPP/MySQL is running and the 'phoolmitra' database exists.");
+        return;
+    }
+    console.log("✅ Connected to MySQL Database: phoolmitra");
+});
+
+// --- 2. SIGNUP ROUTE ---
+app.post("/signup", (req, res) => {
+    const { username, email, password } = req.body;
+
+    if (!username || !email || !password) {
+        return res.status(400).json({ success: false, message: "Missing fields" });
+    }
+
+    bcrypt.hash(password, 10, (err, hashedPwd) => {
+        if (err) return res.status(500).json({ success: false, message: "Hashing error" });
+
+        const sql = "INSERT INTO users (username, email, password) VALUES (?, ?, ?)";
+        db.query(sql, [username, email, hashedPwd], (dbErr, result) => {
+            if (dbErr) {
+                console.error("❌ SIGNUP ERROR:", dbErr.sqlMessage);
+                return res.status(500).json({ success: false, message: "Email already exists or DB error" });
+            }
+            res.json({ success: true, message: "User registered!" });
+        });
+    });
+});
+
+// --- 3. LOGIN ROUTE ---
+app.post("/login", (req, res) => {
+    const { email, password } = req.body;
+
+    const sql = "SELECT * FROM users WHERE email = ?";
+    db.query(sql, [email], async (err, results) => {
+        if (err) return res.status(500).json({ success: false, message: "DB Error" });
+        if (results.length === 0) return res.status(404).json({ success: false, message: "User not found" });
+
+        const match = await bcrypt.compare(password, results[0].password);
+        if (match) {
+            res.json({ success: true, username: results[0].username });
+        } else {
+            res.status(401).json({ success: false, message: "Wrong password" });
+        }
+    });
+});
+
+// --- 4. SERVE HTML FILES ---
+// This ensures that going to the base URL loads your main page
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "Phool-Mitra.html"));
+});
+
+app.listen(PORT, () => {
+    console.log(`\n🚀 Server is LIVE!`);
+    console.log(`👉 Open: http://localhost:${PORT}/signup.html`);
+    console.log(`👉 Open: http://localhost:${PORT}/Phool-Mitra.html`);
+    console.log(`\nPress Ctrl+C to stop the server\n`);
+});

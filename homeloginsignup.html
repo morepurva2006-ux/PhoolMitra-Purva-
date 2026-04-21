@@ -1,0 +1,272 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phool Mitra | Blooms & Happiness</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --accent: #b05d76;
+            --accent-hover: #8a405a;
+            --bg-soft: #fff9fa;
+            --bg-white: #ffffff;
+            --text-dark: #2c2c2c;
+            --text-light: #666;
+            --font-heading: 'Playfair Display', serif;
+            --font-body: 'Lato', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-soft);
+            color: var(--text-dark);
+        }
+
+        .btn {
+            padding: 14px 40px;
+            background: var(--accent);
+            color: #fff;
+            border: 2px solid var(--accent);
+            border-radius: 5px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--accent);
+        }
+
+        .hero-section {
+            height: 100vh;
+            background: linear-gradient(to top, rgba(255,255,255,0.7), rgba(255,255,255,0.1)),
+            url('https://images.unsplash.com/photo-1553531405-b778c8576e93?auto=format&fit=crop&w=2000&q=80');
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            padding-left: 8%;
+        }
+
+        .hero-content {
+            background: rgba(255,255,255,0.95);
+            padding: 40px;
+            max-width: 520px;
+            border-radius: 10px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .hero-content h1 {
+            font-family: var(--font-heading);
+            font-size: 3.8rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-content h1 span {
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+
+        .content-section {
+            padding: 80px 5%;
+            background: var(--bg-white);
+            text-align: center;
+        }
+
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .image-card {
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .card-caption {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            padding: 15px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            font-family: var(--font-heading);
+        }
+
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            z-index: 1000;
+        }
+
+        .login-box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--bg-white);
+            padding: 40px;
+            width: 90%;
+            max-width: 420px;
+            border-radius: 10px;
+            display: none;
+            z-index: 1001;
+            border-top: 5px solid var(--accent);
+        }
+
+        .login-box h2 {
+            font-family: var(--font-heading);
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .login-box p {
+            text-align: center;
+            color: var(--accent);
+            margin-bottom: 25px;
+            font-style: italic;
+        }
+
+        .login-box label {
+            font-weight: 700;
+            margin-top: 15px;
+            display: block;
+        }
+
+        .login-box input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background: var(--bg-soft);
+        }
+
+        .login-box .signup-btn {
+            width: 100%;
+            margin-top: 15px;
+            background: transparent;
+            border: none;
+            color: var(--accent);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- Hero -->
+<section class="hero-section">
+    <div class="hero-content">
+        <h1>The Art of <span>Gifting</span> Blooms</h1>
+        <p>Fresh flowers curated with love, elegance, and joy.</p>
+        <button class="btn btn-outline" onclick="openLogin()">Login to Shop</button>
+    </div>
+</section>
+
+<!-- Collections -->
+<section class="content-section">
+    <h2>Our Signature Collections</h2>
+    <br><br>
+    <div class="image-gallery">
+        <div class="image-card" onclick="openLogin()">
+            <img src="https://images.unsplash.com/photo-1544458514-6997193d406b?auto=format&fit=crop&w=400&q=80">
+            <div class="card-caption">Eternal Rose</div>
+        </div>
+        <div class="image-card" onclick="openLogin()">
+            <img src="https://images.unsplash.com/photo-1593345472856-ff759f2a48a9?auto=format&fit=crop&w=400&q=80">
+            <div class="card-caption">Wildflower Happiness</div>
+        </div>
+        <div class="image-card" onclick="openLogin()">
+            <img src="https://images.unsplash.com/photo-1507297079219-c6e94991c0ff?auto=format&fit=crop&w=400&q=80">
+            <div class="card-caption">Green Sanctuary</div>
+        </div>
+    </div>
+</section>
+
+<!-- Login Popup -->
+<div class="popup-overlay" id="overlay" onclick="closeLogin()"></div>
+
+<div class="login-box" id="loginBox">
+    <h2>Welcome Back</h2>
+    <p>Login to continue shopping</p>
+
+    <form onsubmit="handleLogin(event)">
+        <label>User ID</label>
+        <input type="text" required>
+
+        <label>Password</label>
+        <input type="password" required>
+
+        <button class="btn" style="width:100%; margin-top:25px;">LOGIN</button>
+    </form>
+
+    <!-- Signup Button -->
+    <button class="signup-btn" onclick="redirectSignup()">Don't have an account? Sign Up</button>
+</div>
+
+<script>
+    function openLogin() {
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('loginBox').style.display = 'block';
+    }
+
+    function closeLogin() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('loginBox').style.display = 'none';
+    }
+
+    function handleLogin(e) {
+        e.preventDefault();
+        alert("Login Successful! 🌸");
+        closeLogin();
+    }
+
+    function redirectSignup() {
+        // Redirect to signup page
+        window.location.href = 'signup.html'; // Make sure your signup page is named signup.html
+    }
+</script>
+
+</body>
+</html>
+

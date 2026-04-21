@@ -1,0 +1,1279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Phool Mitra | Blooms & Happiness</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+    :root {
+        --primary: #9d4edd;
+        --accent: #b05d76;   /* Deep Rose */
+        --accent-hover: #8a405a;
+        --bg-soft: #fff9fa;  /* Very faint pink */
+        --bg-white: #ffffff;
+        --text-dark: #2c2c2c;
+        --text-light: #666666;
+        --font-heading: 'Playfair Display', serif;
+        --font-body: 'Lato', sans-serif;
+    }
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    body {
+        font-family: var(--font-body);
+        background-color: var(--bg-soft);
+        color: var(--text-dark);
+        line-height: 1.6;
+        overflow-x: hidden;
+        padding-top: 80px; /* Space for fixed navbar */
+    }
+
+    /* ---------------- ANIMATIONS ---------------- */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+        animation: fadeIn 0.8s ease forwards;
+    }
+
+    /* Flying particle effect */
+    .cart-flyer {
+        position: fixed;
+        z-index: 9999;
+        width: 20px;
+        height: 20px;
+        background: var(--accent);
+        border-radius: 50%;
+        pointer-events: none;
+        transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Toast Notification */
+    .toast-notice {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #2c2c2c;
+        color: white;
+        padding: 12px 25px;
+        border-radius: 50px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transform: translateY(100px);
+        opacity: 0;
+        transition: 0.4s all;
+        z-index: 2000;
+    }
+
+    .toast-notice.show {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    /* Cart Icon Bumps when item arrives */
+    @keyframes cartBump {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.4); }
+        100% { transform: scale(1); }
+    }
+
+    .bump {
+        animation: cartBump 0.4s ease-out;
+    }
+
+    /* ---------------- NAVBAR ---------------- */
+    .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 5%;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        box-shadow: 0 2px 20px rgba(0,0,0,0.03);
+        height: 80px;
+    }
+
+    .brand {
+        font-family: var(--font-heading);
+        font-size: 26px;
+        font-weight: 700;
+        color: var(--accent);
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 40px;
+        list-style: none;
+    }
+
+    .nav-links li button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-family: var(--font-body);
+        color: var(--text-dark);
+        font-weight: 500;
+        font-size: 14px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: color 0.3s;
+        position: relative;
+        padding: 5px 0;
+    }
+
+    .nav-links li button::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 1px;
+        bottom: 0;
+        left: 0;
+        background-color: var(--accent);
+        transition: width 0.3s;
+    }
+
+    .nav-links li button:hover, .nav-links li button.active { color: var(--accent); }
+    .nav-links li button:hover::after, .nav-links li button.active::after { width: 100%; }
+
+    .nav-icons {
+        display: flex;
+        gap: 20px;
+        font-size: 18px;
+        color: var(--text-dark);
+        cursor: pointer;
+    }
+    .nav-icons i:hover { color: var(--accent); }
+
+    .mobile-menu-btn {
+        display: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: var(--text-dark);
+    }
+
+    .cart-count {
+        background: var(--accent);
+        color: white;
+        font-size: 10px;
+        padding: 2px 6px;
+        border-radius: 50%;
+        position: relative;
+        top: -10px;
+        left: -10px;
+    }
+
+    /* ---------------- HERO (HOME) ---------------- */
+    .hero {
+        height: calc(100vh - 80px);
+        background: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), 
+                    url('https://images.unsplash.com/photo-1490750967868-58cb75069ed6?auto=format&fit=crop&w=2000&q=90');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: white;
+        padding: 0 20px;
+        margin-top: -80px;
+        padding-top: 80px;
+    }
+
+    .hero-content {
+        max-width: 800px;
+        animation: fadeIn 1.5s ease;
+    }
+
+    .hero h1 {
+        font-family: var(--font-heading);
+        font-size: 4.5rem;
+        line-height: 1.1;
+        margin-bottom: 20px;
+        text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        font-weight: 300;
+        margin-bottom: 30px;
+        letter-spacing: 1px;
+        opacity: 0.9;
+    }
+
+    .btn {
+        padding: 14px 40px;
+        background-color: #fff;
+        color: var(--text-dark);
+        text-decoration: none;
+        font-family: var(--font-body);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        letter-spacing: 2px;
+        transition: 0.4s;
+        border: none;
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .btn:hover {
+        background-color: var(--accent);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+
+    .btn-outline {
+        background: transparent;
+        border: 2px solid var(--accent);
+        color: var(--accent);
+    }
+    
+    .btn-outline:hover {
+        background: var(--accent);
+        color: white;
+    }
+
+    /* ---------------- SECTIONS COMMON ---------------- */
+    .page-section {
+        display: none;
+    }
+
+    .page-section.active {
+        display: block;
+        animation: fadeIn 0.5s ease;
+    }
+
+    .section-padding {
+        padding: 80px 8%;
+    }
+
+    .section-header {
+        text-align: center;
+        margin-bottom: 60px;
+    }
+
+    .section-header h2 {
+        font-family: var(--font-heading);
+        font-size: 3rem;
+        color: var(--text-dark);
+        margin-bottom: 10px;
+    }
+
+    .section-header p {
+        color: var(--text-light);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .section-header span {
+        display: block;
+        width: 60px;
+        height: 2px;
+        background: var(--accent);
+        margin: 15px auto 0;
+    }
+
+    /* ---------------- PAGE HEADER ---------------- */
+    .page-header {
+        background-color: var(--bg-soft);
+        padding: 60px 5% 40px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .page-header h1 {
+        font-family: var(--font-heading);
+        font-size: 3.5rem;
+        color: var(--text-dark);
+    }
+
+    /* ---------------- HOME COMPONENTS ---------------- */
+    .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .cat-item {
+        position: relative;
+        height: 350px;
+        overflow: hidden;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .cat-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+
+    .cat-overlay {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s;
+    }
+
+    .cat-item h3 {
+        color: white;
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        z-index: 2;
+        letter-spacing: 1px;
+        border-bottom: 1px solid transparent;
+        transition: 0.3s;
+    }
+
+    .cat-item:hover img { transform: scale(1.1); }
+    .cat-item:hover .cat-overlay { background: rgba(0,0,0,0.4); }
+    .cat-item:hover h3 { border-bottom: 1px solid white; padding-bottom: 5px; }
+
+    /* ---------------- PRODUCT CARD ---------------- */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 40px;
+    }
+
+    .product-card {
+        background: white;
+        transition: 0.3s ease;
+        position: relative;
+        border-radius: 4px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    }
+
+    .product-img-box {
+        position: relative;
+        overflow: hidden;
+        height: 320px;
+    }
+
+    .product-img-box img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+    
+    .product-card:hover .product-img-box img {
+        transform: scale(1.05);
+    }
+
+    .overlay-btn {
+        position: absolute;
+        bottom: -50px;
+        left: 0;
+        width: 100%;
+        background: var(--accent);
+        color: white;
+        text-align: center;
+        padding: 15px;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 12px;
+        letter-spacing: 1px;
+        transition: 0.4s;
+        cursor: pointer;
+        opacity: 0;
+    }
+
+    .product-card:hover .overlay-btn {
+        bottom: 0;
+        opacity: 1;
+    }
+
+    .product-details {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .product-details h4 {
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+        color: var(--text-dark);
+    }
+
+    .product-details p {
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 10px;
+        text-transform: capitalize;
+    }
+
+    .price {
+        font-weight: 700;
+        color: var(--accent);
+        font-size: 1.1rem;
+    }
+
+    /* ---------------- SHOP SPECIFIC ---------------- */
+    .search-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .search-input {
+        padding: 12px 20px;
+        width: 100%;
+        max-width: 500px;
+        border: 1px solid #ddd;
+        border-radius: 30px;
+        font-family: var(--font-body);
+        font-size: 16px;
+        outline: none;
+        transition: 0.3s;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+    }
+
+    .search-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 4px 15px rgba(176, 93, 118, 0.1);
+    }
+
+    .shop-controls {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        margin-bottom: 40px;
+        flex-wrap: wrap;
+    }
+    
+    .filter-btn {
+        background: transparent;
+        border: 1px solid #ddd;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-family: var(--font-body);
+        transition: 0.3s;
+    }
+    
+    .filter-btn:hover, .filter-btn.active {
+        background: var(--text-dark);
+        color: white;
+        border-color: var(--text-dark);
+    }
+
+    /* ---------------- OCCASIONS SPECIFIC ---------------- */
+    .occasion-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
+    }
+    
+    .occasion-card {
+        height: 300px;
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    
+    .occasion-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .occasion-content {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        padding: 30px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.8));
+        color: white;
+    }
+    
+    .occasion-content h3 {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        margin-bottom: 5px;
+    }
+
+    /* ---------------- FEATURES ---------------- */
+    .features {
+        background: #fff;
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        padding: 80px 10%;
+        border-top: 1px solid #eee;
+    }
+
+    .feature-box {
+        text-align: center;
+        max-width: 250px;
+        margin: 20px;
+    }
+
+    .feature-box i {
+        font-size: 30px;
+        color: var(--accent);
+        margin-bottom: 20px;
+    }
+
+    .feature-box h4 {
+        font-family: var(--font-heading);
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+
+    .feature-box p {
+        font-size: 0.9rem;
+        color: var(--text-light);
+    }
+
+    /* ---------------- FOOTER ---------------- */
+    footer {
+        background: #1a1a1a;
+        color: #fff;
+        padding: 80px 5% 30px;
+        text-align: center;
+    }
+
+    .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        text-align: left;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding-bottom: 50px;
+        border-bottom: 1px solid #333;
+    }
+
+    .footer-col {
+        flex: 1;
+        min-width: 200px;
+        margin: 20px;
+    }
+
+    .footer-col h3 {
+        font-family: var(--font-heading);
+        margin-bottom: 20px;
+        color: var(--accent);
+    }
+
+    .footer-col ul { list-style: none; }
+    .footer-col ul li { margin-bottom: 12px; }
+    .footer-col ul li button, .footer-col ul li a { 
+        background: none; border:none; color: #aaa; text-decoration: none; transition: 0.3s; cursor: pointer; font-size:16px; font-family:var(--font-body);
+    }
+    .footer-col ul li button:hover, .footer-col ul li a:hover { color: white; }
+
+    .copyright {
+        margin-top: 30px;
+        color: #666;
+        font-size: 0.8rem;
+    }
+
+    /* ---------------- POPUP & CART STYLES ---------------- */
+    .popup-overlay {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        z-index: 999;
+    }
+
+    .popup-box {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: #1c1c1c; 
+        padding: 25px;
+        width: 90%;
+        max-width: 420px;
+        border-radius: 10px;
+        display: none;
+        z-index: 1000;
+        text-align: left;
+        color: white; 
+        box-shadow: 0 0 25px rgba(0,0,0,0.5);
+        max-height: 80%; 
+        overflow-y: auto;
+    }
+    
+    .popup-box.light {
+        background-color: #fff;
+        color: #000 !important;
+    }
+    .popup-box.light h2, .popup-box.light h3, .popup-box.light p, .popup-box.light li {
+        color: #000 !important;
+    }
+
+    .popup-box h2, .popup-box h3, .popup-box p, .popup-box ul li {
+        color: inherit; 
+    }
+
+    .popup-box ul {
+        padding-left: 20px;
+    }
+    
+    .popup-box.light ul {
+        margin-left: 0;
+        list-style: disc;
+    }
+
+    .popup-box button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        border: none;
+        background: #ff4081;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 15px;
+    }
+
+    .popup-box button:hover {
+        background: #e5326d;
+    }
+    
+    /* CART SPECIFIC */
+    #cart-items-list {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+        border-bottom: 1px solid #333;
+        padding-bottom: 10px;
+    }
+    #cart-items-list li {
+        padding: 8px 0;
+        display: flex;
+        justify-content: space-between;
+        font-size: 1rem;
+        color: #ddd;
+    }
+    #cart-total-line {
+        display: flex;
+        justify-content: space-between;
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-top: 15px;
+    }
+    
+    .payment-option-btn {
+        width: 100%;
+        margin-top: 20px; 
+        padding: 15px 20px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        font-size: 16px;
+        font-weight: 700;
+        text-transform: uppercase;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: background 0.3s;
+    }
+    
+    .gpay-btn { background: #4285F4; color: white; box-shadow: 0 4px 10px rgba(66, 133, 244, 0.4); }
+    .paytm-btn { background: #00B9F1; color: white; box-shadow: 0 4px 10px rgba(0, 185, 241, 0.4); }
+    .cod-btn { background: #888; color: white; }
+    .payment-option-btn:hover { opacity: 0.9; }
+
+    /* ---------------- CONFIRMATION PAGE ---------------- */
+    .conf-box {
+        background: var(--bg-soft);
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+    }
+    
+    .conf-detail {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        border-bottom: 1px dashed #ddd;
+        padding-bottom: 10px;
+    }
+
+    .address-box {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 4px solid var(--accent);
+    }
+
+    /* ---------------- RESPONSIVE ---------------- */
+    @media (max-width: 768px) {
+        .navbar { padding: 15px 20px; }
+        .mobile-menu-btn { display: block; }
+        
+        .nav-links {
+            position: fixed;
+            top: 80px;
+            left: -100%;
+            width: 100%;
+            height: calc(100vh - 80px);
+            background: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.4s ease;
+            gap: 30px;
+            border-top: 1px solid #eee;
+        }
+        
+        .nav-links.active { left: 0; }
+        .nav-links li button { font-size: 1.2rem; }
+        .hero h1 { font-size: 3rem; }
+        .section-padding { padding: 60px 5%; }
+        .footer-content { flex-direction: column; text-align: center; }
+        .brand { font-size: 20px; }
+        .occasion-grid { grid-template-columns: 1fr; }
+        .conf-detail { font-size: 1rem; flex-direction: column; gap: 5px; }
+    }
+</style>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="brand" onclick="showPage('home')"><i class="fa-solid fa-seedling"></i> Phool Mitra</div>
+        <div class="mobile-menu-btn" onclick="toggleMobileMenu()"><i class="fa-solid fa-bars"></i></div>
+        <ul class="nav-links" id="navLinks">
+            <li><button onclick="showPage('home')" class="nav-btn active" data-target="home">Home</button></li>
+            <li><button onclick="showPage('shop')" class="nav-btn" data-target="shop">Shop</button></li>
+            <li><button onclick="showPage('occasions')" class="nav-btn" data-target="occasions">Occasions</button></li>
+            <li><button onclick="showPage('subscriptions')" class="nav-btn" data-target="subscriptions">Subscriptions</button></li>
+            <li><button onclick="showPage('journal')" class="nav-btn" data-target="journal">Journal</button></li>
+        </ul>
+        <div class="nav-icons">
+            <i class="fa-solid fa-magnifying-glass" onclick="showPage('shop'); document.getElementById('shopSearchInput').focus();"></i>
+            <i class="fa-regular fa-heart"></i>
+            <div style="display:inline-block; position:relative;" onclick="showCartPopup()">
+                <i class="fa-solid fa-bag-shopping"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
+        </div>
+    </nav>
+
+    <div id="home" class="page-section active">
+        <section class="hero">
+            <div class="hero-content">
+                <h1>Let Nature Speak</h1>
+                <p>Hand-picked artisan blooms curated for life's beautiful moments.</p>
+                <button onclick="showPage('shop')" class="btn">Explore Collection</button>
+            </div>
+        </section>
+
+        <section class="section-padding">
+            <div class="section-header">
+                <h2>Curated Collections</h2>
+                <span></span>
+            </div>
+            <div class="categories-grid">
+                <div class="cat-item" onclick="showPage('shop')">
+                     <img src="https://images.unsplash.com/photo-1591886616132-7582967690f0?auto=format&fit=crop&w=800&q=80" alt="Romance">
+                    <div class="cat-overlay"><h3>Romance</h3></div>
+                </div>
+                <div class="cat-item" onclick="showPage('shop')">
+                    <img src="https://images.unsplash.com/photo-1526047932273-341f2a7631f9?auto=format&fit=crop&w=800&q=80" alt="Wildflowers">
+                    <div class="cat-overlay"><h3>Wildflowers</h3></div>
+                </div>
+                <div class="cat-item" onclick="showPage('shop')">
+                    <img src="https://images.unsplash.com/photo-1525268771113-32d9e9020a97?auto=format&fit=crop&w=800&q=80" alt="Everlasting">
+                    <div class="cat-overlay"><h3>Everlasting</h3></div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-padding" style="background-color: #fff;">
+            <div class="section-header">
+                <h2>This Week's Favorites</h2>
+                <span></span>
+            </div>
+            
+            <div class="product-grid" id="home-featured-products"></div>
+            
+            <div style="text-align: center; margin-top: 50px;">
+                <button onclick="showPage('shop')" class="btn" style="background:var(--text-dark); color:white;">View All Products</button>
+            </div>
+        </section>
+    </div>
+
+    <div id="shop" class="page-section">
+        <div class="page-header">
+            <h1>Our Collection</h1>
+            <p style="margin-top:10px; color:var(--text-light);">Fresh from the fields to your vase.</p>
+        </div>
+        
+        <section class="section-padding" style="background:white;">
+            <div class="search-container">
+                <input type="text" id="shopSearchInput" class="search-input" placeholder="Search for your favorite flowers...">
+            </div>
+
+            <div class="shop-controls">
+                <button class="filter-btn active" onclick="filterProducts('all', this)">All Blooms</button>
+                <button class="filter-btn" onclick="filterProducts('bouquet', this)">Bouquets</button>
+                <button class="filter-btn" onclick="filterProducts('dried', this)">Dried Flowers</button>
+                <button class="filter-btn" onclick="filterProducts('plant', this)">Plants</button>
+                <button class="filter-btn" onclick="filterProducts('gift', this)">Gifts</button>
+            </div>
+
+            <div class="product-grid" id="shop-products"></div>
+            <div id="no-results" style="text-align:center; display:none; grid-column: 1/-1; padding: 40px;">
+                <h3 style="color:var(--text-light);">No flowers found matching your search.</h3>
+            </div>
+        </section>
+    </div>
+
+    <div id="occasions" class="page-section">
+        <div class="page-header">
+            <h1>Shop by Occasion</h1>
+            <p style="margin-top:10px; color:var(--text-light);">Find the perfect sentiment for every moment.</p>
+        </div>
+
+        <section class="section-padding">
+            <div class="occasion-grid">
+                <div class="occasion-card">
+                    <img src="https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=800&q=80" alt="Birthday">
+                    <div class="occasion-content">
+                        <h3>Birthday</h3>
+                        <p>Bright, cheerful blooms to celebrate another year.</p>
+                        <button class="btn" onclick="showPage('shop')" style="margin-top:15px; padding:8px 20px; font-size:10px;">Shop Now</button>
+                    </div>
+                </div>
+                <div class="occasion-card">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80" alt="Anniversary">
+                    <div class="occasion-content">
+                        <h3>Anniversary</h3>
+                        <p>Romantic roses and elegant arrangements.</p>
+                        <button class="btn" onclick="showPage('shop')" style="margin-top:15px; padding:8px 20px; font-size:10px;">Shop Now</button>
+                    </div>
+                </div>
+                <div class="occasion-card">
+                    <img src="https://images.unsplash.com/photo-1518199266791-5375a83190b7?auto=format&fit=crop&w=800&q=80" alt="Congratulations">
+                    <div class="occasion-content">
+                        <h3>Congratulations</h3>
+                        <p>Vibrant mixes to say "Well Done!".</p>
+                        <button class="btn" onclick="showPage('shop')" style="margin-top:15px; padding:8px 20px; font-size:10px;">Shop Now</button>
+                    </div>
+                </div>
+                <div class="occasion-card">
+                    <img src="file:///C:/PHOOL%20MITRA/flowers%20img/Wedding.jpg" alt="Wedding">
+                    <div class="occasion-content">
+                        <h3>Wedding</h3>
+                        <p>"When fall in love, it will be forever".</p>
+                        <button class="btn" onclick="showPage('shop')" style="margin-top:15px; padding:8px 20px; font-size:10px;">Shop Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div id="subscriptions" class="page-section">
+        <div class="page-header">
+            <h1>Subscriptions</h1>
+            <p style="margin-top:10px; color:var(--text-light);">Coming soon: Regular blooms delivered to your door.</p>
+        </div>
+    </div>
+    <div id="journal" class="page-section">
+        <div class="page-header">
+            <h1>Journal</h1>
+            <p style="margin-top:10px; color:var(--text-light);">Coming soon: Stories and tips from our florists.</p>
+        </div>
+    </div>
+
+    <div id="orderConfirmation" class="page-section">
+        <div class="page-header accent-bg" style="background-color: var(--accent); color: white;">
+            <h1><i class="fa-solid fa-circle-check"></i> Order Confirmed!</h1>
+            <p style="margin-top:10px; color:white; opacity:0.9;">Your order has been placed successfully and will be delivered soon.</p>
+        </div>
+        <section class="section-padding" style="background-color: white;">
+            <div id="conf-details-container" style="max-width: 800px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                
+                <div class="conf-box">
+                    <h3 style="font-family: var(--font-heading); color: var(--accent); border-bottom: 2px solid var(--bg-soft); padding-bottom: 10px; margin-bottom: 20px;">Order Summary</h3>
+                    
+                    <div class="conf-detail">
+                        <strong>Payment Method:</strong> <span>Cash on Delivery (COD)</span>
+                    </div>
+                    <div class="conf-detail">
+                        <strong>Total Bill:</strong> <span id="conf-total-bill" style="font-size: 1.5rem; font-weight: 700; color: var(--accent);">₹0</span>
+                    </div>
+                    <div class="conf-detail">
+                        <strong>Order Placed:</strong> <span id="conf-date"></span>
+                    </div>
+                    <div class="conf-detail">
+                        <strong>Order ID:</strong> <span id="conf-order-id" style="color: var(--text-dark); font-weight: 700;"></span>
+                    </div>
+                    <div class="conf-detail">
+                        <strong>Tracking ID:</strong> <span id="conf-track-id"></span>
+                    </div>
+                    <div class="conf-detail">
+                        <strong>Customer ID:</strong> <span id="conf-customer-id"></span>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 30px; margin-top: 40px; flex-wrap: wrap;">
+                    <div class="address-box" style="flex: 1; min-width: 300px;">
+                        <h4 style="font-family: var(--font-heading); color: var(--text-dark); margin-bottom: 15px;"><i class="fa-solid fa-file-invoice"></i> Billing Address</h4>
+                        <p id="conf-billing-address" style="line-height: 1.8; color: var(--text-light);"></p>
+                    </div>
+                    <div class="address-box" style="flex: 1; min-width: 300px;">
+                        <h4 style="font-family: var(--font-heading); color: var(--text-dark); margin-bottom: 15px;"><i class="fa-solid fa-truck"></i> Shipping Address</h4>
+                        <p id="conf-shipping-address" style="line-height: 1.8; color: var(--text-light);"></p>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 50px; display: flex; flex-direction: column; align-items: center; gap: 15px;">
+                    <button onclick="showPage('home')" class="btn" style="background:var(--accent); color:white; width: 250px;">Continue Shopping</button>
+                    <button onclick="openPopup('feedbackPopup')" class="btn btn-outline" style="border-color: var(--text-light); color: var(--text-dark); width: 250px;">
+                        <i class="fa-regular fa-comment-dots"></i> Write Feedback
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <section class="features">
+        <div class="feature-box">
+            <i class="fa-solid fa-truck-fast"></i>
+            <h4>Swift Delivery</h4>
+            <p>Same-day delivery for those spontaneous moments of love.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-leaf"></i>
+            <h4>Farm Fresh</h4>
+            <p>Sourced directly from local sustainable farms daily.</p>
+        </div>
+        <div class="feature-box">
+            <i class="fa-solid fa-gift"></i>
+            <h4>Artisan Wrapped</h4>
+            <p>Signature packaging that makes unboxing an experience.</p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-col">
+                <h3>Phool Mitra</h3>
+                <p style="color:#aaa; line-height:1.8;">Bringing nature's elegance to your doorstep. We believe flowers are the music of the ground.</p>
+            </div>
+            <div class="footer-col">
+                <h3>Shop</h3>
+                <ul>
+                    <li><button onclick="openPopup('freshFlowersPopup')">Fresh Flowers</button></li>
+                    <li><button onclick="openPopup('livePlantsPopup')">Live Plants</button></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h3>Help</h3>
+                <ul>
+                    <li><button onclick="openPopup('deliveryPopup')">Delivery Info</button></li>
+                    <li><button onclick="openPopup('carePopup')">Flower Care</button></li>
+                    <li><button onclick="openPopup('contactPopup')">Contact Us</button></li>
+                </ul>
+            </div>
+        </div>
+        <div class="copyright">
+            &copy; 2026 Phool Mitra. Designed with <i class="fa-solid fa-heart" style="color:var(--accent);"></i> in India.
+        </div>
+    </footer>
+
+    <div id="cartPopupOverlay" class="popup-overlay" onclick="closeCartPopup()"></div>
+    <div id="generalPopupOverlay" class="popup-overlay" onclick="closeGeneralPopup()"></div>
+
+    <div id="cartPopupBox" class="popup-box">
+        <h2>🛍️ Your Basket</h2>
+        <ul id="cart-items-list"></ul>
+        <div id="cart-total-line">
+            <span>TOTAL:</span>
+            <span id="cart-total">₹0</span>
+        </div>
+        
+        <button class="payment-option-btn gpay-btn" onclick="proceedToGooglePay()">
+             <i class="fa-brands fa-google-pay"></i> Pay with Google Pay
+        </button>
+        <button class="payment-option-btn paytm-btn" onclick="proceedToPaytm()">
+             <i class="fa-solid fa-mobile-screen-button"></i> Pay with Paytm
+        </button>
+        <button class="payment-option-btn cod-btn" onclick="proceedToCOD()">
+             <i class="fa-solid fa-handshake"></i> Cash on Delivery (COD)
+        </button>
+        <button style="width:100%; background:#333; margin-top: 10px;" onclick="closeCartPopup()">Continue Shopping</button>
+    </div>
+
+    <div id="freshFlowersPopup" class="popup-box light general-popup">
+        <h2>🌹 Fresh Flowers</h2>
+        <p>Our fresh flowers are hand-selected from local farms and carefully arranged.</p>
+        <ul>
+            <li>Daily source</li>
+            <li>Expertly crafted</li>
+        </ul>
+        <button onclick="closeGeneralPopup()">Close</button>
+    </div>
+
+    <div id="livePlantsPopup" class="popup-box light general-popup">
+        <h2>🌱 Live Plants</h2>
+        <p>Bring nature indoors with our healthy, easy-to-care-for live plants.</p>
+        <button onclick="closeGeneralPopup()">Close</button>
+    </div>
+
+    <div id="contactPopup" class="popup-box general-popup">
+        <h2>📞 Contact Us</h2>
+        <p>Phone: +93 8659743285</p>
+        <p>Email: hello@phoolmitra.com</p>
+        <button onclick="closeGeneralPopup()">Close</button>
+    </div>
+
+    <div id="deliveryPopup" class="popup-box general-popup">
+        <h2>Delivery Info</h2>
+        <p>Order before 2 PM for same-day delivery.</p>
+        <button onclick="closeGeneralPopup()">Close</button>
+    </div>
+
+    <div id="carePopup" class="popup-box general-popup">
+        <h2>🌿 Flower Care</h2>
+        <p>Trim stems at 45 degrees and change water every 2 days.</p>
+        <button onclick="closeGeneralPopup()">Close</button>
+    </div>
+    
+    <div id="feedbackPopup" class="popup-box light general-popup">
+        <h2>📝 Feedback</h2>
+        <p>We'd love to hear your thoughts! (Placeholder form)</p>
+        <textarea style="width:100%; height:80px; margin-top:10px; padding:10px;" placeholder="Write your feedback here..."></textarea>
+        <button onclick="closeGeneralPopup()">Submit</button>
+    </div>
+<script>
+    // --- DATA ---
+    let cart = [];
+
+    // Updated with relative paths so images load on localhost
+    const flowerProducts = [
+        { id: 1, name: "Spring Whisper", price: 199, category:"bouquet", img: "flowers img/Spring Whisper.jpg" },
+        { id: 2, name: "Pure Elegance", price: 150, category: "bouquet", img: "flowers img/Pure Elegance.jpg" },
+        { id: 3, name: "The Velvet Dream", price: 299, category: "bouquet", img: "flowers img/The Velvet Dream.jpg" },
+        { id: 4, name: "Sunshine State", price: 399, category: "bouquet", img: "flowers img/Sunshine State.jpg" },
+        { id: 5, name: "Orange Marigold", price: 199, category: "bouquet", img: "flowers img/Orange Marigold.jpg" },
+        { id: 6, name: "Wild Daisy Mix", price: 299, category: "bouquet", img: "flowers img/Wild Daisy Mix.jpg" },
+        { id: 7, name: "Violet Delight", price: 200, category: "bouquet", img: "flowers img/Violet Delight.jpg" },
+        { id: 8, name: "White Tulip Dream", price: 299, category: "bouquet", img: "flowers img/White Tulip Dream.jpg" },
+        { id: 9, name: "Teddy & Tulips gift", price: 899, category: "gift", img: "flowers img/Teddy & Tulips gift.jpg" },
+        { id: 10, name: "Gift Box Rose and Chocolate", price: 499, category: "gift", img: "flowers img/Gift Box Rose and Chocolate.jpg" },
+        { id: 11, name: "Royal Orchid", price: 299, category: "plant", img: "flowers img/Royal Orchid.jpg" },
+        { id: 12, name: "Blushing Peony", price: 199, category: "bouquet", img: "flowers img/Blushing Peony.jpg" },
+        { id: 13, name: "Candle & Flowers gift", price: 399, category: "gift", img: "flowers img/Candle & Flowers gift.jpg" },
+        { id: 14, name: "Aloe Vera plant", price: 199, category: "plant", img: "flowers img/Aloe Vera plant.jpg" },
+        { id: 15, name: "Peace Lily plant", price: 499, category: "plant", img: "flowers img/Peace Lily plant.jpg" },
+        { id: 16, name: "Monstera Leaf plant", price: 399, category: "plant", img: "flowers img/Monstera Leaf plant.jpg" },
+        { id: 17, name: "Hibiscus Potted plant", price: 299, category: "plant", img: "flowers img/Hibiscus Potted plant.jpg" },
+        { id: 18, name: "Baby's Breath dried", price: 150, category: "dried", img: "flowers img/Baby's Breath dried.jpg" },
+        { id: 19, name: "Cotton Stems dried", price: 149, category: "dried", img: "flowers img/Cotton Stems dried.jpg" },
+        { id: 20, name: "Eternal Red Rose gift", price: 599, category: "gift", img: "flowers img/Eternal Red Rose gift.jpg" },
+        { id: 21, name: "Garden Party", price: 399, category: "bouquet", img: "flowers img/Garden Party.jpg" },
+        { id: 22, name: "Lavender Fields dried", price: 299, category: "dried", img: "flowers img/Lavender Fields dried.jpg" },
+        { id: 23, name: "Golden Hour", price: 499, category: "bouquet", img: "flowers img/Golden Hour.jpg" },
+        { id: 24, name: "Morning Glory", price: 299, category: "bouquet", img: "flowers img/Morning Glory.jpg" },
+        { id: 25, name: "Dried bouquet", price: 200, category: "dried", img: "flowers img/Dried bouqute.jpg" },
+        { id: 26, name: "Free Elegant Floral", price: 200, category: "dried", img: "flowers img/Free Elegant Floral.jpg" },
+        { id: 27, name: "Gold and cream dried flower", price: 200, category: "dried", img: "flowers img/Gold and cream dried flower.jpg" }
+    ];
+
+    // --- NAVIGATION ---
+    function showPage(pageId) {
+        document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+        const target = document.getElementById(pageId);
+        if (target) {
+            target.style.display = 'block';
+            setTimeout(() => target.classList.add('active'), 10);
+        }
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if(btn.getAttribute('data-target') === pageId) btn.classList.add('active');
+        });
+        window.scrollTo(0,0);
+    }
+
+    // --- CART & UI ---
+    function updateCartUI() {
+        document.getElementById('cartCount').innerText = cart.length;
+        const list = document.getElementById('cart-items-list');
+        list.innerHTML = '';
+        let total = 0;
+
+        if (cart.length === 0) {
+            list.innerHTML = '<li style="justify-content:center; opacity:0.5;">Your basket is empty</li>';
+        } else {
+            cart.forEach((item, index) => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <span>${item.name}</span> 
+                    <div style="display:flex; gap:15px; align-items:center;">
+                        <span>₹${item.price}</span>
+                        <i class="fa-solid fa-trash-can" onclick="removeFromCart(${index})" style="cursor:pointer; font-size:12px; color:#ff4081;"></i>
+                    </div>`;
+                list.appendChild(li);
+                total += item.price;
+            });
+        }
+        document.getElementById('cart-total').innerText = `₹${total}`;
+    }
+
+    function addToCart(event, productId) {
+        const product = flowerProducts.find(p => p.id === productId);
+        if (!product) return;
+        cart.push(product);
+        updateCartUI();
+        // Trigger animation logic here if desired
+    }
+
+    function removeFromCart(index) {
+        cart.splice(index, 1);
+        updateCartUI();
+    }
+
+    function showCartPopup() {
+        document.getElementById("cartPopupOverlay").style.display = "block";
+        document.getElementById("cartPopupBox").style.display = "block";
+    }
+
+    function closeCartPopup() {
+        document.getElementById("cartPopupOverlay").style.display = "none";
+        document.getElementById("cartPopupBox").style.display = "none";
+    }
+
+    // --- BACKEND INTEGRATED ORDER FUNCTIONS ---
+    function proceedToCOD() {
+        if (cart.length === 0) return alert("Your basket is empty!");
+        
+        let total = cart.reduce((sum, item) => sum + item.price, 0);
+        const orderId = 'PM-' + Math.floor(100000 + Math.random() * 900000);
+        const trackId = 'TRK' + Math.floor(10000000 + Math.random() * 90000000);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const today = new Date().toLocaleDateString('en-IN', options);
+
+        // Prepare data for server
+        const orderData = {
+            order_number: orderId,
+            total_amount: total,
+            tracking_id: trackId,
+            flower_items: cart.map(item => item.name).join(', ')
+        };
+
+        fetch('http://localhost:5000/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log("✅ Order saved to database");
+                
+                // Update Confirmation UI
+                document.getElementById('conf-total-bill').innerText = `₹${total}`;
+                document.getElementById('conf-order-id').innerText = orderId;
+                document.getElementById('conf-track-id').innerText = trackId;
+                document.getElementById('conf-date').innerText = today;
+                document.getElementById('conf-billing-address').innerHTML = "Jane Doe<br>123 Floral Avenue<br>Mumbai, Maharashtra 400001";
+                document.getElementById('conf-shipping-address').innerHTML = "Jane Doe<br>123 Floral Avenue<br>Mumbai, Maharashtra 400001";
+
+                cart = [];
+                updateCartUI();
+                closeCartPopup();
+                showPage('orderConfirmation');
+            } else {
+                alert("Database Error: " + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Connection Error:', error);
+            alert("Could not connect to server. Ensure Node.js is running on Port 5000.");
+        });
+    }
+
+    function proceedToGooglePay() {
+        if (cart.length === 0) return alert("Your basket is empty!");
+        alert("Redirecting to Google Pay secure gateway...");
+    }
+    
+    function proceedToPaytm() {
+        if (cart.length === 0) return alert("Your basket is empty!");
+        alert("Redirecting to Paytm secure gateway...");
+    }
+
+    // --- RENDERING ---
+    function renderProducts(products, containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+        
+        products.forEach(product => {
+            const card = document.createElement('div');
+            card.classList.add('product-card');
+            card.innerHTML = `
+                <div class="product-img-box">
+                    <img src="${product.img}" alt="${product.name}">
+                    <div class="overlay-btn" onclick="addToCart(event, ${product.id})">Add to Basket</div>
+                </div>
+                <div class="product-details">
+                    <h4>${product.name}</h4>
+                    <p>${product.category}</p>
+                    <div class="price">₹${product.price}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    function filterProducts(category, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filtered = category === 'all' ? flowerProducts : flowerProducts.filter(p => p.category === category);
+        renderProducts(filtered, 'shop-products');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        renderProducts(flowerProducts.slice(0,3), 'home-featured-products');
+        renderProducts(flowerProducts, 'shop-products');
+        updateCartUI();
+    });
+</script>    </script>
+</body>
+</html>
